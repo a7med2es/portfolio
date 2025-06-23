@@ -5,8 +5,8 @@ const Hero = () => {
   const handleDownloadCV = () => {
     // Create a temporary link to download CV
     const link = document.createElement('a');
-    link.href = '/cv-ahmed-essam.pdf'; // You'll need to add your CV PDF to the public folder
-    link.download = 'Ahmed-Essam-CV.pdf';
+    link.href = '/ahmed-uploads/AhmedEssam_Resume.pdf'; // You'll need to add your CV PDF to the public folder
+    link.download = 'AhmedEssam_Resume.pdf';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -24,7 +24,7 @@ const Hero = () => {
             <div className="relative">
               <div className="w-80 h-80 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl">
                 <img 
-                  src="/lovable-uploads/b10adb61-3762-4a61-b548-b4bac3b6d5d4.png" 
+                  src="/ahmed-uploads/b10adb61-3762-4a61-b548-b4bac3b6d5d4.png" 
                   alt="Ahmed Essam" 
                   className="w-full h-full object-cover"
                 />
