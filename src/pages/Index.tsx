@@ -6,7 +6,6 @@ import WorkExperience from "@/components/WorkExperience";
 import AcademicProjects from "@/components/AcademicProjects";
 import Languages from "@/components/Languages";
 import Footer from "@/components/Footer";
-import ProjectsButton from "@/components/ProjectsButton";
 
 const Index = () => {
   return (
@@ -34,7 +33,7 @@ const Index = () => {
       </div>
       
       {/* Projects Button */}
-      <ProjectsButton />
+      {/* <ProjectsButton /> */}
       
       {/* Footer */}
       <Footer />

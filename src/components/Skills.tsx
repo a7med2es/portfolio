@@ -1,15 +1,16 @@
-
-import { Code, Cpu, Database, Wrench, Globe, Zap } from "lucide-react";
+import { Code, Cpu, Database, Wrench, Globe, Zap, Users, Handshake, BookOpenCheck, Group } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Skills = () => {
   const skills = [
-    { icon: Code, text: "C++ Programming - University course projects" },
-    { icon: Cpu, text: "MATLAB & Simulink - Lab applications" },
-    { icon: Globe, text: "Web Development - Self-taught practice" },
-    { icon: Wrench, text: "PLC Programming - University coursework" },
-    { icon: Database, text: "MySQL - Database course projects" },
-    { icon: Zap, text: "OOP - Self-taught practice" }
+    { icon: Users, text: "Management Skills" },
+    { icon: Handshake, text: "Negotiation" },
+    { icon: BookOpenCheck, text: "Self-Learning" },
+    { icon: Group, text: "Team Collaboration" },
+    { icon: Cpu, text: "MATLAB & Simulink – Lab applications" },
+    { icon: Code, text: "Arduino, ESP32, Microcontrollers, UART" },
+    { icon: Globe, text: "Web Development – Self-taught practice" },
+    { icon: Wrench, text: "PLC Programming – University coursework" }
   ];
 
   return (
