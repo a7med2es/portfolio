@@ -35,7 +35,7 @@ const Hero = () => {
           
           {/* Profile Info */}
           <div className="flex-1 text-center lg:text-left">
-            <h1 className="text-5xl lg:text-6xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-white bg-clip-text text-transparent">
+            <h1 className="text-4xl lg:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-white bg-clip-text text-transparent whitespace-nowrap">
               AHMED ESSAM
             </h1>
             <div className="space-y-2 mb-6">
