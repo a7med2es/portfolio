@@ -1,5 +1,4 @@
-import { Mail, Phone } from "lucide-react";
-import { Linkedin } from "lucide-react"; // أيقونة LinkedIn
+import { Mail, Phone, MapPin } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Contact = () => {
@@ -35,7 +34,7 @@ const Contact = () => {
           </a>
         </div>
         <div className="flex items-start gap-3">
-          <Linkedin className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+          <MapPin className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
           <a 
             href="https://www.linkedin.com/in/ahmed-essam-881382326" 
             target="_blank" 
