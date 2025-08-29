@@ -21,7 +21,14 @@ const Contact = () => {
         </div>
         <div className="flex items-start gap-3">
           <MapPin className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-          <span className="text-slate-700">Baghdad, Iraq</span>
+          <a 
+            href="https://www.linkedin.com/in/ahmed-essam-881382326" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-slate-700 hover:underline"
+          >
+            LinkedIn Profile
+          </a>
         </div>
       </CardContent>
     </Card>
