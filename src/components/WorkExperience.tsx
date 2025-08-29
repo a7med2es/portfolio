@@ -1,9 +1,13 @@
-
 import { Briefcase, Building, ArrowRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const WorkExperience = () => {
   const experiences = [
+    {
+      title: "Contact Center & Technical Support",
+      company: "EarthLink Telecommunications",
+      description: "Ensure proper diagnosis of service outages and site/zone disruptions, escalating unresolved incidents to the appropriate technical teams. Handle and resolve customer service issues including service downtime, connectivity degradation, and banking-related incidents while ensuring SLA compliance. Monitor, document, and follow up on tickets, providing accurate updates and maintaining records in line with company procedures. Contribute to root-cause analysis and process improvement to reduce incident recurrence and enhance service reliability."
+    },
     {
       title: "Technical Projects Developer",
       company: "esp32 - Arduino - user interface",
