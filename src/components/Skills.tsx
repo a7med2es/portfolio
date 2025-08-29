@@ -3,14 +3,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Skills = () => {
   const skills = [
-    { icon: Users, text: "Management Skills" },
-    { icon: Handshake, text: "Negotiation" },
-    { icon: BookOpenCheck, text: "Self-Learning" },
-    { icon: Group, text: "Team Collaboration" },
-    { icon: Cpu, text: "MATLAB & Simulink – Lab applications" },
-    { icon: Code, text: "Arduino, ESP32, Microcontrollers, UART" },
-    { icon: Globe, text: "Web Development – Self-taught practice" },
-    { icon: Wrench, text: "PLC Programming – University coursework" }
+    { icon: Users, text: "Customer Support & Service" },
+    { icon: Wrench, text: "PLC Programming - University coursework" },
+    { icon: Handshake, text: "Customer Incident Handling (Downtime, Weak Signal)" },
+    { icon: BookOpenCheck, text: "Ticket Management & Documentation" },
+    { icon: Zap, text: "Service Outage Diagnosis & Escalation" },
+    { icon: Globe, text: "Time Management & Multitasking under Pressure" },
+    { icon: Database, text: "Networking & ISP Knowledge" },
+    { icon: Globe, text: "Basic ISP & Networking Fundamentals" },
+    { icon: Cpu, text: "TCP/IP, DNS, VPN, HTTP Basics" },
+    { icon: Wrench, text: "Troubleshooting & Service Outage Diagnosis" },
+    { icon: Handshake, text: "Escalation Procedures & Communication" },
+    { icon: Code, text: "Arduino, ESP32, Microcontrollers" },
+    { icon: Cpu, text: "UART Communication Protocols" },
+    { icon: BookOpenCheck, text: "Problem Solving & System Thinking" }
   ];
 
   return (
