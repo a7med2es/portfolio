@@ -39,7 +39,7 @@ const Hero = () => {
               AHMED ESSAM
             </h1>
             <div className="space-y-4 mb-8">
-              <p className="text-xl text-blue-200 font-semibold tracking-wide uppercase">Control & Systems Engineer</p>
+              <p className="text-xl text-blue-200 font-semibold tracking-wide uppercase">Technical Support</p>
               <p className="text-lg text-slate-300 max-w-2xl leading-relaxed">
                 Results-driven Control and Systems Engineer with hands-on experience in ISP technical support, incident management, and network troubleshooting. Strong background in SLA-driven case handling, service outage diagnosis, and continuous service reliability improvement.
               </p>
