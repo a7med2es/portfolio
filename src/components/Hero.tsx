@@ -1,15 +1,34 @@
-import { Mail, Phone, MapPin, Download } from "lucide-react";
+import { ArrowRight, Download, Mail, Phone, MapPin, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useHero } from "@/hooks/usePortfolioData";
 
 const Hero = () => {
-  const handleDownloadCV = () => {
-    // Create a temporary link to download CV
-    const link = document.createElement('a');
-    link.href = '/ahmed-uploads/AhmedEssam_Resume.pdf'; // You'll need to add your CV PDF to the public folder
-    link.download = 'AhmedEssam_Resume.pdf';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const { data: heroData, isLoading } = useHero();
+
+  const handleDownload = () => {
+    if (heroData?.resume_url) {
+      window.open(heroData.resume_url, '_blank');
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 relative overflow-hidden">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+      </section>
+    );
+  }
+
+  // Fallback to existing data if DB is empty for some reason
+  const data = heroData || {
+    name: "AHMED ESSAM",
+    title: "Control & Systems Engineer",
+    summary: "Results-driven Control and Systems Engineer with hands-on experience in ISP technical support, incident management, and network troubleshooting. Strong background in SLA-driven case handling, service outage diagnosis, and continuous service reliability improvement.",
+    phone: "+9647701773452",
+    email: "34asqf@gmail.com",
+    location: "Baghdad, Iraq",
+    avatar_url: "/ahmed-uploads/b10adb61-3762-4a61-b548-b4bac3b6d5d4.png",
+    resume_url: "/ahmed-uploads/AhmedEssam_Resume.pdf"
   };
 
   return (
@@ -24,8 +43,8 @@ const Hero = () => {
             <div className="relative">
               <div className="w-80 h-80 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl">
                 <img
-                  src="/ahmed-uploads/b10adb61-3762-4a61-b548-b4bac3b6d5d4.png"
-                  alt="Ahmed Essam"
+                  src={data.avatar_url}
+                  alt={data.name}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -34,41 +53,52 @@ const Hero = () => {
           </div>
 
           {/* Profile Info */}
-          <div className="flex-1 text-center lg:text-left">
-            <h1 className="text-4xl lg:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-white bg-clip-text text-transparent whitespace-nowrap">
-              AHMED ESSAM
-            </h1>
-            <div className="space-y-4 mb-8">
-              {/* <p className="text-xl text-blue-200 font-semibold tracking-wide uppercase">Technical Support</p> */}
-              <p className="text-lg text-slate-300 max-w-2xl leading-relaxed">
-                Results-driven Control and Systems Engineer with hands-on experience in ISP technical support, incident management, and network troubleshooting. Strong background in SLA-driven case handling, service outage diagnosis, and continuous service reliability improvement.
+          <div className="text-center lg:text-left space-y-6">
+            <div className="space-y-4">
+              <h1 className="text-5xl lg:text-7xl font-bold tracking-tight text-white leading-tight">
+                {data.name}
+              </h1>
+              <h2 className="text-2xl lg:text-3xl text-blue-400 font-medium tracking-wide">
+                {data.title}
+              </h2>
+              <p className="text-lg text-slate-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                {data.summary}
               </p>
             </div>
 
-            {/* Download CV Button */}
-            <div className="mb-6">
-              <Button
-                onClick={handleDownloadCV}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 shadow-lg"
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
+              <Button 
+                size="lg" 
+                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white rounded-full px-8 shadow-lg shadow-blue-900/20 transition-all hover:-translate-y-0.5"
+                onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+              >
+                Contact Me
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="w-full sm:w-auto rounded-full px-8 border-2 border-slate-700 hover:bg-slate-800 text-white transition-all hover:-translate-y-0.5"
+                onClick={handleDownload}
               >
                 <Download className="w-5 h-5 mr-2" />
-                AhmedEssam_Resume
+                Download Resume
               </Button>
             </div>
 
             {/* Quick Contact */}
-            <div className="flex flex-wrap justify-center lg:justify-start gap-6 text-sm">
-              <a href="tel:+9647701773452" className="flex items-center gap-2 hover:text-blue-300 transition-colors">
+            <div className="flex flex-wrap justify-center lg:justify-start gap-6 text-sm mt-8">
+              <a href={`tel:${data.phone}`} className="flex items-center gap-2 hover:text-blue-300 transition-colors">
                 <Phone className="w-4 h-4 text-blue-400" />
-                <span>+9647701773452</span>
+                <span>{data.phone}</span>
               </a>
-              <a href="mailto:34asqf@gmail.com" className="flex items-center gap-2 hover:text-blue-300 transition-colors">
+              <a href={`mailto:${data.email}`} className="flex items-center gap-2 hover:text-blue-300 transition-colors">
                 <Mail className="w-4 h-4 text-blue-400" />
-                <span>34asqf@gmail.com</span>
+                <span>{data.email}</span>
               </a>
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-blue-400" />
-                <span>Baghdad, Iraq</span>
+                <span>{data.location}</span>
               </div>
             </div>
           </div>
