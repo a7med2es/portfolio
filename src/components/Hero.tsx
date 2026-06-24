@@ -39,7 +39,7 @@ const Hero = () => {
               AHMED ESSAM
             </h1>
             <div className="space-y-4 mb-8">
-              <p className="text-xl text-blue-200 font-semibold tracking-wide uppercase">Technical Support</p>
+              {/* <p className="text-xl text-blue-200 font-semibold tracking-wide uppercase">Technical Support</p> */}
               <p className="text-lg text-slate-300 max-w-2xl leading-relaxed">
                 Results-driven Control and Systems Engineer with hands-on experience in ISP technical support, incident management, and network troubleshooting. Strong background in SLA-driven case handling, service outage diagnosis, and continuous service reliability improvement.
               </p>
@@ -58,14 +58,14 @@ const Hero = () => {
 
             {/* Quick Contact */}
             <div className="flex flex-wrap justify-center lg:justify-start gap-6 text-sm">
-              <div className="flex items-center gap-2">
+              <a href="tel:+9647701773452" className="flex items-center gap-2 hover:text-blue-300 transition-colors">
                 <Phone className="w-4 h-4 text-blue-400" />
                 <span>+9647701773452</span>
-              </div>
-              <div className="flex items-center gap-2">
+              </a>
+              <a href="mailto:34asqf@gmail.com" className="flex items-center gap-2 hover:text-blue-300 transition-colors">
                 <Mail className="w-4 h-4 text-blue-400" />
                 <span>34asqf@gmail.com</span>
-              </div>
+              </a>
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-blue-400" />
                 <span>Baghdad, Iraq</span>
