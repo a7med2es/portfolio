@@ -37,7 +37,7 @@ const Skills = () => {
     {
       title: "Web Technologies",
       skills: [
-        "HTML5 & CSS3",
+        "HTML5, CSS3, & SQL",
         "Integrated web-based control interfaces via UART"
       ],
       icon: Globe,

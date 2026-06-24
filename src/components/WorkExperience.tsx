@@ -7,6 +7,7 @@ const WorkExperience = () => {
       title: "Technical Support",
       company: "EarthLink Telecommunications",
       location: "Baghdad",
+      date: "07/2025 - Present",
       description: [
         "Diagnosed and resolved network and service incidents, escalating complex cases within SLA timelines.",
         "Managed technical support tickets end-to-end with accurate documentation and customer follow-up.",
@@ -20,6 +21,7 @@ const WorkExperience = () => {
       title: "Electronics and Control",
       company: "Al-Munir Home Appliances Manufacturing Company",
       location: "Baghdad",
+      date: "06/2024 - 01/2025",
       description: [
         "Assisted in testing and supporting the production of control panels.",
         "Gained hands-on experience with electronic systems in appliance manufacturing."
@@ -45,9 +47,16 @@ const WorkExperience = () => {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-bold text-slate-800 text-xl mb-1">{exp.title}</h3>
-                  <div className="flex items-center gap-2 mb-3">
-                    <Building className="w-4 h-4 text-blue-500" />
-                    <span className="text-slate-600 font-semibold">{exp.company}</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                    <div className="flex items-center gap-2">
+                      <Building className="w-4 h-4 text-blue-500" />
+                      <span className="text-slate-600 font-semibold">{exp.company}</span>
+                    </div>
+                    {exp.date && (
+                      <div className="text-sm text-slate-500 font-medium bg-slate-100 px-3 py-1 rounded-full whitespace-nowrap w-fit">
+                        {exp.date}
+                      </div>
+                    )}
                   </div>
                   <ul className="space-y-2 list-disc list-inside text-slate-700 leading-relaxed mb-4">
                     {exp.description.map((item, id) => (

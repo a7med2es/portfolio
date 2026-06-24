@@ -25,6 +25,7 @@ const AcademicProjects = () => {
                   <div>
                     <h3 className="text-2xl font-bold text-slate-800 mb-1 tracking-tight">Smart Vehicle System</h3>
                     <p className="text-indigo-600 font-bold text-sm uppercase tracking-widest">Graduation Project - University of Technology</p>
+                    <p className="text-slate-500 text-sm mt-1 font-medium">01/2021 - 05/2025</p>
                   </div>
                   <Button asChild className="bg-gradient-to-r from-indigo-600 to-blue-700 hover:from-indigo-700 hover:to-blue-800 shadow-md">
                     <a href="https://a7med-uot-project.netlify.app/index.html" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
