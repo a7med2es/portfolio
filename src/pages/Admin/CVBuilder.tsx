@@ -4,14 +4,16 @@ import { supabase } from '@/lib/supabase';
 import { useHero, useExperiences, useEducation, useSkills, useProjects } from '@/hooks/usePortfolioData';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Download, Save } from 'lucide-react';
+import { Loader2, Download, Save, Type } from 'lucide-react';
 import { toast } from 'sonner';
+import { CVFloatingToolbar } from '@/components/CVFloatingToolbar';
 
 export default function CVBuilder() {
   const templateRef = useRef<HTMLDivElement>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
+  const [globalFont, setGlobalFont] = useState('Arial, sans-serif');
 
   const { data: hero, isLoading: heroLoading } = useHero();
   const { data: exp, isLoading: expLoading } = useExperiences();
@@ -115,7 +117,29 @@ export default function CVBuilder() {
           </div>
         </CardHeader>
         
-        <CardContent className="bg-slate-100 p-8 flex justify-center overflow-x-auto">
+        {/* Global Controls */}
+        <div className="bg-slate-50 border-b border-slate-100 px-6 py-3 flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Type className="w-4 h-4 text-slate-500" />
+            <span className="text-sm font-medium text-slate-700">CV Font:</span>
+            <select 
+              value={globalFont}
+              onChange={(e) => setGlobalFont(e.target.value)}
+              className="h-8 px-2 text-sm border border-slate-200 rounded-md bg-white focus:outline-none focus:border-blue-500"
+            >
+              <option value="Arial, sans-serif">Arial</option>
+              <option value="'Times New Roman', Times, serif">Times New Roman</option>
+              <option value="'Courier New', Courier, monospace">Courier New</option>
+              <option value="Georgia, serif">Georgia</option>
+              <option value="Verdana, sans-serif">Verdana</option>
+              <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+              <option value="Inter, sans-serif">Inter</option>
+            </select>
+          </div>
+        </div>
+        
+        <CardContent className="bg-slate-200 p-8 flex justify-center overflow-x-auto relative">
+          <CVFloatingToolbar containerRef={templateRef} />
           {/* A4 Container */}
           <div 
             ref={templateRef}
@@ -124,7 +148,7 @@ export default function CVBuilder() {
               width: '210mm', 
               minHeight: '297mm', 
               padding: '12mm',
-              fontFamily: 'Arial, sans-serif'
+              fontFamily: globalFont
             }}
           >
             {/* CV HEADER */}
