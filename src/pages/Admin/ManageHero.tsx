@@ -43,10 +43,7 @@ export default function ManageHero() {
   const [formData, setFormData] = useState<any>({});
   const [saving, setSaving] = useState(false);
   const [hiddenFields, setHiddenFields] = useState<Set<string>>(() => {
-    try {
-      const stored = localStorage.getItem(HIDDEN_FIELDS_KEY);
-      return stored ? new Set(JSON.parse(stored)) : new Set();
-    } catch { return new Set(); }
+    return new Set();
   });
   const [dragActive, setDragActive] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -58,6 +55,8 @@ export default function ManageHero() {
     if (hero) {
       setFormData(hero);
       setImagePreview(hero.avatar_url || "");
+      // Load hidden_fields from DB
+      setHiddenFields(new Set(hero.hidden_fields || []));
     }
   }, [hero]);
 
@@ -65,14 +64,17 @@ export default function ManageHero() {
     setFormData((prev: any) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const toggleHidden = (fieldName: string) => {
-    setHiddenFields(prev => {
-      const next = new Set(prev);
-      if (next.has(fieldName)) next.delete(fieldName);
-      else next.add(fieldName);
-      localStorage.setItem(HIDDEN_FIELDS_KEY, JSON.stringify([...next]));
-      return next;
-    });
+  const toggleHidden = async (fieldName: string) => {
+    const next = new Set(hiddenFields);
+    if (next.has(fieldName)) next.delete(fieldName);
+    else next.add(fieldName);
+    setHiddenFields(next);
+    // Save to DB immediately
+    if (hero?.id) {
+      const { error } = await supabase.from("hero").update({ hidden_fields: [...next] }).eq("id", hero.id);
+      if (error) toast.error("Failed to save visibility: " + error.message);
+      else refetch();
+    }
   };
 
   const uploadImage = async (file: File) => {

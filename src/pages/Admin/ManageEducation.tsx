@@ -77,18 +77,13 @@ export default function ManageEducation() {
   const [addingNew, setAddingNew] = useState(false);
   const [newData, setNewData] = useState<any>({ ...emptyEdu });
   const [saving, setSaving] = useState(false);
-  const [hiddenItems, setHiddenItems] = useState<Set<string>>(() => {
-    try { return new Set(JSON.parse(localStorage.getItem(HIDDEN_KEY) || "[]")); }
-    catch { return new Set(); }
-  });
+  const [hiddenItems, setHiddenItems] = useState<Set<string>>(new Set());
 
-  const toggleHidden = (id: string) => {
-    setHiddenItems(prev => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      localStorage.setItem(HIDDEN_KEY, JSON.stringify([...next]));
-      return next;
-    });
+  const toggleHidden = async (id: string, currentlyHidden: boolean) => {
+    const newHidden = !currentlyHidden;
+    const { error } = await supabase.from("education").update({ is_hidden: newHidden }).eq("id", id);
+    if (error) { toast.error("Failed to update visibility: " + error.message); return; }
+    refetch();
   };
 
   const handleSave = async (data: any, isNew = false) => {
@@ -146,23 +141,23 @@ export default function ManageEducation() {
 
       <div className="space-y-3">
         {education?.map((edu: any) => (
-          <Card key={edu.id} className={`border-0 shadow-sm transition-all ${hiddenItems.has(edu.id) ? "opacity-50 bg-red-50/30" : "bg-white"}`}>
+          <Card key={edu.id} className={`border-0 shadow-sm transition-all ${edu.is_hidden ? "opacity-50 bg-red-50/30" : "bg-white"}`}>
             <CardContent className="pt-4 pb-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center flex-wrap gap-2">
                     <span className="font-bold text-slate-800">{edu.title}</span>
                     {edu.is_training && <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">Training</span>}
-                    {hiddenItems.has(edu.id) && <span className="text-xs bg-red-100 text-red-500 px-2 py-0.5 rounded-full font-medium">Hidden</span>}
+                    {edu.is_hidden && <span className="text-xs bg-red-100 text-red-500 px-2 py-0.5 rounded-full font-medium">Hidden</span>}
                   </div>
                   <p className="text-sm text-slate-500 mt-0.5">{edu.institution} {edu.date && `· ${edu.date}`}</p>
                   {edu.honors && <p className="text-xs text-green-600 font-medium mt-0.5">{edu.honors}</p>}
                 </div>
                 <div className="flex items-center gap-1 flex-shrink-0">
-                  <Button size="sm" variant="ghost" title={hiddenItems.has(edu.id) ? "Show" : "Hide"}
-                    onClick={() => toggleHidden(edu.id)}
-                    className={hiddenItems.has(edu.id) ? "text-red-400 hover:text-red-600" : "text-slate-400 hover:text-slate-600"}>
-                    {hiddenItems.has(edu.id) ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  <Button size="sm" variant="ghost" title={edu.is_hidden ? "Show" : "Hide"}
+                    onClick={() => toggleHidden(edu.id, edu.is_hidden)}
+                    className={edu.is_hidden ? "text-red-400 hover:text-red-600" : "text-slate-400 hover:text-slate-600"}>
+                    {edu.is_hidden ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </Button>
                   <Button size="sm" variant="ghost"
                     onClick={() => editingId === edu.id ? (setEditingId(null), setEditData(null)) : (setEditingId(edu.id), setEditData({ ...edu }))}

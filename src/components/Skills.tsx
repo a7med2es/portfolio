@@ -1,7 +1,6 @@
 import { Code, Cpu, Database, Wrench, Globe, Zap, Users, Handshake, BookOpenCheck, Group, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useSkills } from "@/hooks/usePortfolioData";
-import { useEffect, useState } from "react";
 
 // Helper to map string icon names to Lucide icons
 const iconMap: Record<string, any> = {
@@ -10,20 +9,12 @@ const iconMap: Record<string, any> = {
 
 const Skills = () => {
   const { data: skillsData, isLoading } = useSkills();
-  const [hiddenItems, setHiddenItems] = useState<Set<string>>(new Set());
-
-  useEffect(() => {
-    try {
-      const hidden = new Set(JSON.parse(localStorage.getItem("portfolio_hidden_skills") || "[]")) as Set<string>;
-      setHiddenItems(hidden);
-    } catch { }
-  }, []);
 
   if (isLoading) {
     return <div className="flex justify-center py-10"><Loader2 className="w-6 h-6 animate-spin text-purple-500" /></div>;
   }
 
-  const visibleSkills = (skillsData || []).filter((skill: any) => !hiddenItems.has(skill.id));
+  const visibleSkills = (skillsData || []).filter((skill: any) => !skill.is_hidden);
 
   if (visibleSkills.length === 0) return null;
 

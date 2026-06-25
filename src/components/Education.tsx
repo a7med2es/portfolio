@@ -1,24 +1,15 @@
 import { GraduationCap, Calendar, Award, ExternalLink, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useEducation } from "@/hooks/usePortfolioData";
-import { useEffect, useState } from "react";
 
 const Education = () => {
   const { data: educationData, isLoading } = useEducation();
-  const [hiddenItems, setHiddenItems] = useState<Set<string>>(new Set());
-
-  useEffect(() => {
-    try {
-      const hidden = new Set(JSON.parse(localStorage.getItem("portfolio_hidden_education") || "[]")) as Set<string>;
-      setHiddenItems(hidden);
-    } catch { }
-  }, []);
 
   if (isLoading) {
     return <div className="flex justify-center py-10"><Loader2 className="w-6 h-6 animate-spin text-green-500" /></div>;
   }
 
-  const visibleEdu = (educationData || []).filter((edu: any) => !hiddenItems.has(edu.id));
+  const visibleEdu = (educationData || []).filter((edu: any) => !edu.is_hidden);
   
   if (visibleEdu.length === 0) return null;
 

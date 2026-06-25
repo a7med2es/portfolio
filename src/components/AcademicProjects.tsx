@@ -2,24 +2,15 @@ import { Rocket, ExternalLink, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useProjects } from "@/hooks/usePortfolioData";
-import { useEffect, useState } from "react";
 
 const AcademicProjects = () => {
   const { data: projects, isLoading } = useProjects();
-  const [hiddenItems, setHiddenItems] = useState<Set<string>>(new Set());
-
-  useEffect(() => {
-    try {
-      const hidden = new Set(JSON.parse(localStorage.getItem("portfolio_hidden_projects") || "[]")) as Set<string>;
-      setHiddenItems(hidden);
-    } catch { }
-  }, []);
 
   if (isLoading) {
     return <div className="flex justify-center py-10"><Loader2 className="w-6 h-6 animate-spin text-indigo-500" /></div>;
   }
 
-  const visibleProjects = (projects || []).filter((proj: any) => !hiddenItems.has(proj.id));
+  const visibleProjects = (projects || []).filter((proj: any) => !proj.is_hidden);
 
   if (visibleProjects.length === 0) return null;
 

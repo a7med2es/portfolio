@@ -1,18 +1,13 @@
 import { ArrowRight, Download, Mail, Phone, MapPin, Loader2, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useHero } from "@/hooks/usePortfolioData";
-import { useEffect, useState } from "react";
 
 const Hero = () => {
   const { data: heroData, isLoading } = useHero();
-  const [hiddenFields, setHiddenFields] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    try {
-      const hidden = new Set(JSON.parse(localStorage.getItem("portfolio_hero_hidden_fields") || "[]")) as Set<string>;
-      setHiddenFields(hidden);
-    } catch { }
-  }, []);
+  // Read hidden fields from database instead of localStorage
+  const hiddenFields = new Set<string>(heroData?.hidden_fields || []);
+
 
   const handleDownload = () => {
     if (heroData?.resume_url) {
