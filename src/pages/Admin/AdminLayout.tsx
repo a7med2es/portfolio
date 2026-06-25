@@ -30,6 +30,7 @@ export default function AdminLayout() {
           <Link to="/admin/education" className="block px-4 py-2 rounded-lg hover:bg-slate-800 hover:text-white transition-colors">Education</Link>
           <Link to="/admin/projects" className="block px-4 py-2 rounded-lg hover:bg-slate-800 hover:text-white transition-colors">Projects</Link>
           <Link to="/admin/skills" className="block px-4 py-2 rounded-lg hover:bg-slate-800 hover:text-white transition-colors">Skills</Link>
+          <Link to="/admin/cv" className="block px-4 py-2 mt-2 rounded-lg bg-blue-900/50 text-blue-400 hover:bg-blue-600 hover:text-white transition-colors border border-blue-800/50 shadow-sm font-medium">CV Update (PDF)</Link>
           <div className="pt-4 mt-4 border-t border-slate-800"></div>
           <Link to="/admin/restore" className="block px-4 py-2 rounded-lg text-indigo-400 hover:bg-slate-800 transition-colors font-medium">Restore Default Data</Link>
         </nav>

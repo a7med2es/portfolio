@@ -84,20 +84,23 @@ export default function ManageHero() {
     try {
       const ext = file.name.split(".").pop() || "png";
       const filename = `avatar-${Date.now()}.${ext}`;
-      const buffer = await file.arrayBuffer();
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        headers: { "x-filename": filename, "Content-Type": file.type },
-        body: buffer,
-      });
-      const result = await response.json();
-      if (result.url) {
-        setFormData((prev: any) => ({ ...prev, avatar_url: result.url }));
-        setImagePreview(URL.createObjectURL(file));
-        toast.success("Image uploaded successfully!");
-      } else {
-        throw new Error(result.error || "Upload failed");
-      }
+      
+      const { data, error } = await supabase.storage
+        .from('portfolio_files')
+        .upload(filename, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('portfolio_files')
+        .getPublicUrl(filename);
+
+      setFormData((prev: any) => ({ ...prev, avatar_url: publicUrl }));
+      setImagePreview(URL.createObjectURL(file));
+      toast.success("Image uploaded successfully!");
     } catch (err: any) {
       toast.error("Upload failed: " + err.message);
     } finally {
@@ -120,19 +123,22 @@ export default function ManageHero() {
     setUploadingResume(true);
     try {
       const filename = `resume-${Date.now()}.pdf`;
-      const buffer = await file.arrayBuffer();
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        headers: { "x-filename": filename, "Content-Type": file.type },
-        body: buffer,
-      });
-      const result = await response.json();
-      if (result.url) {
-        setFormData((prev: any) => ({ ...prev, resume_url: result.url }));
-        toast.success("Resume uploaded successfully!");
-      } else {
-        throw new Error(result.error || "Upload failed");
-      }
+      
+      const { data, error } = await supabase.storage
+        .from('portfolio_files')
+        .upload(filename, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('portfolio_files')
+        .getPublicUrl(filename);
+
+      setFormData((prev: any) => ({ ...prev, resume_url: publicUrl }));
+      toast.success("Resume uploaded successfully!");
     } catch (err: any) {
       toast.error("Upload failed: " + err.message);
     } finally {
