@@ -152,20 +152,26 @@ export default function CVBuilder() {
                     Experience
                   </h3>
                   <div className="flex flex-col gap-5">
-                    {(exp || []).map((e: any, i: number) => (
-                      <div key={i}>
-                        <h4 contentEditable suppressContentEditableWarning className="font-bold text-slate-900 text-[15px] focus:outline-blue-200">{e.title}</h4>
-                        <h5 contentEditable suppressContentEditableWarning className="text-blue-600 font-bold text-sm focus:outline-blue-200">{e.company}</h5>
-                        <p contentEditable suppressContentEditableWarning className="text-xs text-slate-500 font-semibold mb-2 focus:outline-blue-200">
-                          {e.start_date} - {e.end_date || "Present"}
-                        </p>
-                        <ul className="list-disc ml-4 text-xs text-slate-700 space-y-1">
-                          {(e.description || "").split('\n').filter(Boolean).map((line: string, j: number) => (
-                            <li key={j} contentEditable suppressContentEditableWarning className="focus:outline-blue-200">{line.replace(/^-\s*/, '')}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
+                    {(exp || []).map((e: any, i: number) => {
+                      const descItems = Array.isArray(e.description) 
+                        ? e.description 
+                        : (e.description || "").split('\n').filter(Boolean);
+                      
+                      return (
+                        <div key={i}>
+                          <h4 contentEditable suppressContentEditableWarning className="font-bold text-slate-900 text-[15px] focus:outline-blue-200">{e.title}</h4>
+                          <h5 contentEditable suppressContentEditableWarning className="text-blue-600 font-bold text-sm focus:outline-blue-200">{e.company}</h5>
+                          <p contentEditable suppressContentEditableWarning className="text-xs text-slate-500 font-semibold mb-2 focus:outline-blue-200">
+                            {e.start_date} - {e.end_date || "Present"}
+                          </p>
+                          <ul className="list-disc ml-4 text-xs text-slate-700 space-y-1">
+                            {descItems.map((line: string, j: number) => (
+                              <li key={j} contentEditable suppressContentEditableWarning className="focus:outline-blue-200">{line.replace(/^-\s*/, '')}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      );
+                    })}
                   </div>
                 </section>
 
@@ -198,19 +204,25 @@ export default function CVBuilder() {
                     Projects
                   </h3>
                   <div className="flex flex-col gap-4">
-                    {(projs || []).map((p: any, i: number) => (
-                      <div key={i}>
-                        <h4 contentEditable suppressContentEditableWarning className="font-bold text-slate-900 text-[15px] focus:outline-blue-200">{p.title}</h4>
-                        <div className="text-xs text-slate-500 font-semibold mb-2">
-                           <span contentEditable suppressContentEditableWarning className="focus:outline-blue-200">{p.link || p.github_url}</span>
+                    {(projs || []).map((p: any, i: number) => {
+                      const descItems = Array.isArray(p.descriptions) 
+                        ? p.descriptions 
+                        : (p.description || "").split('\n').filter(Boolean);
+                      
+                      return (
+                        <div key={i}>
+                          <h4 contentEditable suppressContentEditableWarning className="font-bold text-slate-900 text-[15px] focus:outline-blue-200">{p.title}</h4>
+                          <div className="text-xs text-slate-500 font-semibold mb-2">
+                             <span contentEditable suppressContentEditableWarning className="focus:outline-blue-200">{p.link || p.github_url || p.project_url}</span>
+                          </div>
+                          <ul className="list-disc ml-4 text-xs text-slate-700 space-y-1">
+                            {descItems.map((line: string, j: number) => (
+                              <li key={j} contentEditable suppressContentEditableWarning className="focus:outline-blue-200">{line.replace(/^-\s*/, '')}</li>
+                            ))}
+                          </ul>
                         </div>
-                        <ul className="list-disc ml-4 text-xs text-slate-700 space-y-1">
-                          {(p.description || "").split('\n').filter(Boolean).map((line: string, j: number) => (
-                            <li key={j} contentEditable suppressContentEditableWarning className="focus:outline-blue-200">{line.replace(/^-\s*/, '')}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </section>
               </div>
@@ -237,11 +249,14 @@ export default function CVBuilder() {
                     <div>
                        <h4 contentEditable suppressContentEditableWarning className="text-blue-600 font-bold text-[13px] mb-2 focus:outline-blue-200">Core Competencies</h4>
                        <ul className="flex flex-col gap-2">
-                        {(skills || []).map((s: any, i: number) => (
-                          <li key={i} contentEditable suppressContentEditableWarning className="text-[13px] text-slate-800 font-semibold border-b border-slate-100 pb-1 focus:outline-blue-200">
-                            {s.name}
-                          </li>
-                        ))}
+                        {(skills || []).map((s: any, i: number) => {
+                          const skillsString = Array.isArray(s.skills_list) ? s.skills_list.join(", ") : s.skills_list;
+                          return (
+                            <li key={i} contentEditable suppressContentEditableWarning className="text-[13px] text-slate-800 font-semibold border-b border-slate-100 pb-1 focus:outline-blue-200">
+                              <span className="font-bold text-blue-600 mr-1">{s.category}:</span> {skillsString}
+                            </li>
+                          );
+                        })}
                        </ul>
                     </div>
                   </div>
