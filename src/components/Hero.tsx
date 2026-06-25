@@ -1,9 +1,18 @@
-import { ArrowRight, Download, Mail, Phone, MapPin, Loader2 } from "lucide-react";
+import { ArrowRight, Download, Mail, Phone, MapPin, Loader2, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useHero } from "@/hooks/usePortfolioData";
+import { useEffect, useState } from "react";
 
 const Hero = () => {
   const { data: heroData, isLoading } = useHero();
+  const [hiddenFields, setHiddenFields] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    try {
+      const hidden = new Set(JSON.parse(localStorage.getItem("portfolio_hero_hidden_fields") || "[]")) as Set<string>;
+      setHiddenFields(hidden);
+    } catch { }
+  }, []);
 
   const handleDownload = () => {
     if (heroData?.resume_url) {
@@ -38,32 +47,40 @@ const Hero = () => {
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="flex flex-col lg:flex-row items-center gap-12">
-          {/* Profile Image - Made larger */}
-          <div className="flex-shrink-0">
-            <div className="relative">
-              <div className="w-80 h-80 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl">
-                <img
-                  src={data.avatar_url}
-                  alt={data.name}
-                  className="w-full h-full object-cover"
-                />
+          {/* Profile Image */}
+          {!hiddenFields.has("avatar_url") && (
+            <div className="flex-shrink-0">
+              <div className="relative">
+                <div className="w-80 h-80 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl">
+                  <img
+                    src={data.avatar_url}
+                    alt={data.name}
+                    className="w-full h-full object-cover object-top"
+                  />
+                </div>
+                <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-blue-500/20 to-transparent"></div>
               </div>
-              <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-blue-500/20 to-transparent"></div>
             </div>
-          </div>
+          )}
 
           {/* Profile Info */}
           <div className="text-center lg:text-left space-y-6">
             <div className="space-y-4">
-              <h1 className="text-5xl lg:text-7xl font-bold tracking-tight text-white leading-tight">
-                {data.name}
-              </h1>
-              <h2 className="text-2xl lg:text-3xl text-blue-400 font-medium tracking-wide">
-                {data.title}
-              </h2>
-              <p className="text-lg text-slate-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-                {data.summary}
-              </p>
+              {!hiddenFields.has("name") && (
+                <h1 className="text-5xl lg:text-7xl font-bold tracking-tight text-white leading-tight">
+                  {data.name}
+                </h1>
+              )}
+              {!hiddenFields.has("title") && (
+                <h2 className="text-2xl lg:text-3xl text-blue-400 font-medium tracking-wide">
+                  {data.title}
+                </h2>
+              )}
+              {!hiddenFields.has("summary") && (
+                <p className="text-lg text-slate-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                  {data.summary}
+                </p>
+              )}
             </div>
 
             {/* Action Buttons */}
@@ -71,35 +88,54 @@ const Hero = () => {
               <Button 
                 size="lg" 
                 className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white rounded-full px-8 shadow-lg shadow-blue-900/20 transition-all hover:-translate-y-0.5"
-                onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => {
+                  const el = document.getElementById('footer-contact');
+                  if (el) {
+                    const top = el.getBoundingClientRect().top + window.scrollY;
+                    window.scrollTo({ top, behavior: 'smooth' });
+                  }
+                }}
               >
                 Contact Me
               </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="w-full sm:w-auto rounded-full px-8 border-2 border-slate-700 hover:bg-slate-800 text-white transition-all hover:-translate-y-0.5"
-                onClick={handleDownload}
-              >
-                <Download className="w-5 h-5 mr-2" />
-                Download Resume
-              </Button>
+              {!hiddenFields.has("resume_url") && (
+                <Button 
+                  size="lg" 
+                  className="w-full sm:w-auto rounded-full px-8 bg-transparent border-2 border-slate-500 text-white hover:bg-slate-700 hover:text-white hover:border-slate-400 transition-all hover:-translate-y-0.5"
+                  onClick={handleDownload}
+                >
+                  <Download className="w-5 h-5 mr-2" />
+                  Download Resume
+                </Button>
+              )}
             </div>
 
             {/* Quick Contact */}
             <div className="flex flex-wrap justify-center lg:justify-start gap-6 text-sm mt-8">
-              <a href={`tel:${data.phone}`} className="flex items-center gap-2 hover:text-blue-300 transition-colors">
-                <Phone className="w-4 h-4 text-blue-400" />
-                <span>{data.phone}</span>
-              </a>
-              <a href={`mailto:${data.email}`} className="flex items-center gap-2 hover:text-blue-300 transition-colors">
-                <Mail className="w-4 h-4 text-blue-400" />
-                <span>{data.email}</span>
-              </a>
-              <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-blue-400" />
-                <span>{data.location}</span>
-              </div>
+              {!hiddenFields.has("phone") && data.phone && (
+                <a href={`tel:${data.phone}`} className="flex items-center gap-2 hover:text-blue-300 transition-colors">
+                  <Phone className="w-4 h-4 text-blue-400" />
+                  <span>{data.phone}</span>
+                </a>
+              )}
+              {!hiddenFields.has("email") && data.email && (
+                <a href={`mailto:${data.email}`} className="flex items-center gap-2 hover:text-blue-300 transition-colors">
+                  <Mail className="w-4 h-4 text-blue-400" />
+                  <span>{data.email}</span>
+                </a>
+              )}
+              {!hiddenFields.has("location") && data.location && (
+                <div className="flex items-center gap-2 text-slate-300">
+                  <MapPin className="w-4 h-4 text-blue-400" />
+                  <span>{data.location}</span>
+                </div>
+              )}
+              {!hiddenFields.has("website") && data.website && (
+                <a href={data.website.startsWith('http') ? data.website : `https://${data.website}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 hover:text-blue-300 transition-colors text-slate-300">
+                  <Globe className="w-4 h-4 text-blue-400" />
+                  <span>{data.website.replace(/^https?:\/\//, '')}</span>
+                </a>
+              )}
             </div>
           </div>
         </div>

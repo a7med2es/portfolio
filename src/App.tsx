@@ -11,8 +11,20 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/Admin/Login";
 import AdminLayout from "./pages/Admin/AdminLayout";
 import ManageHero from "./pages/Admin/ManageHero";
+import ManageExperience from "./pages/Admin/ManageExperience";
+import ManageEducation from "./pages/Admin/ManageEducation";
+import ManageProjects from "./pages/Admin/ManageProjects";
+import ManageSkills from "./pages/Admin/ManageSkills";
+import SeedData from "./pages/Admin/SeedData";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // Data is fresh for 5 minutes
+      refetchOnWindowFocus: false, // Don't refetch on window focus
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -30,10 +42,11 @@ const App = () => (
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<div className="text-xl text-slate-500 font-medium text-center py-20">Welcome to Admin Panel. Select an option from the sidebar to edit your portfolio.</div>} />
               <Route path="hero" element={<ManageHero />} />
-              <Route path="experience" element={<div>Manage Experience (Coming Soon)</div>} />
-              <Route path="education" element={<div>Manage Education (Coming Soon)</div>} />
-              <Route path="projects" element={<div>Manage Projects (Coming Soon)</div>} />
-              <Route path="skills" element={<div>Manage Skills (Coming Soon)</div>} />
+              <Route path="experience" element={<ManageExperience />} />
+              <Route path="education" element={<ManageEducation />} />
+              <Route path="projects" element={<ManageProjects />} />
+              <Route path="skills" element={<ManageSkills />} />
+              <Route path="restore" element={<SeedData />} />
             </Route>
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

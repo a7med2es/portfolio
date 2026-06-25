@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Contact = () => {
   return (
-    <Card className="bg-white/80 backdrop-blur-sm shadow-lg border-0">
+    <Card id="contact" className="bg-white/80 backdrop-blur-sm shadow-lg border-0">
       <CardHeader className="pb-4">
         <CardTitle className="text-xl font-bold text-slate-800 flex items-center gap-2">
           <div className="w-2 h-6 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full"></div>

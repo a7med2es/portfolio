@@ -1,49 +1,31 @@
-import { Code, Cpu, Database, Wrench, Globe, Zap, Users, Handshake, BookOpenCheck, Group } from "lucide-react";
+import { Code, Cpu, Database, Wrench, Globe, Zap, Users, Handshake, BookOpenCheck, Group, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useSkills } from "@/hooks/usePortfolioData";
+import { useEffect, useState } from "react";
+
+// Helper to map string icon names to Lucide icons
+const iconMap: Record<string, any> = {
+  Users, Database, Cpu, Globe, Code, Wrench, Zap, Handshake, BookOpenCheck, Group
+};
 
 const Skills = () => {
-  const skillCategories = [
-    {
-      title: "Customer Support & Service",
-      skills: [
-        "Incident Handling & Service Outage Diagnosis",
-        "Ticket Management, Documentation & SLA Compliance",
-        "Customer Communication & Case Ownership",
-        "Escalation Handling & Technical Reporting"
-      ],
-      icon: Users,
-      color: "purple"
-    },
-    {
-      title: "Networking & ISP Knowledge",
-      skills: [
-        "TCP/IP, DNS, VPN, HTTP",
-        "Network Fault Isolation & First-Level Troubleshooting",
-        "Remote Support & CRM/Ticketing Systems"
-      ],
-      icon: Database,
-      color: "blue"
-    },
-    {
-      title: "Technical Skills",
-      skills: [
-        "ESP32 & Arduino Development",
-        "Control Systems & Electronics Testing",
-        "UART & Embedded Communication"
-      ],
-      icon: Cpu,
-      color: "green"
-    },
-    {
-      title: "Web Technologies",
-      skills: [
-        "HTML5, CSS3, & SQL",
-        "Integrated web-based control interfaces via UART"
-      ],
-      icon: Globe,
-      color: "orange"
-    }
-  ];
+  const { data: skillsData, isLoading } = useSkills();
+  const [hiddenItems, setHiddenItems] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    try {
+      const hidden = new Set(JSON.parse(localStorage.getItem("portfolio_hidden_skills") || "[]")) as Set<string>;
+      setHiddenItems(hidden);
+    } catch { }
+  }, []);
+
+  if (isLoading) {
+    return <div className="flex justify-center py-10"><Loader2 className="w-6 h-6 animate-spin text-purple-500" /></div>;
+  }
+
+  const visibleSkills = (skillsData || []).filter((skill: any) => !hiddenItems.has(skill.id));
+
+  if (visibleSkills.length === 0) return null;
 
   return (
     <Card className="bg-white/80 backdrop-blur-sm shadow-lg border-0 overflow-hidden">
@@ -55,22 +37,25 @@ const Skills = () => {
       </CardHeader>
       <CardContent className="p-0">
         <div className="divide-y divide-slate-100">
-          {skillCategories.map((category, index) => {
-            const Icon = category.icon;
+          {visibleSkills.map((category: any) => {
+            const Icon = iconMap[category.icon_name] || Wrench;
+            const colorClass = category.color || "slate";
             return (
-              <div key={index} className="p-5 hover:bg-slate-50/50 transition-colors">
+              <div key={category.id} className="p-5 hover:bg-slate-50/50 transition-colors">
                 <div className="flex items-center gap-2 mb-3">
-                  <Icon className={`w-5 h-5 text-${category.color}-600`} />
-                  <h4 className="font-bold text-slate-800 text-sm uppercase tracking-tight">{category.title}</h4>
+                  <Icon className={`w-5 h-5 text-${colorClass}-600`} />
+                  <h4 className="font-bold text-slate-800 text-sm uppercase tracking-tight">{category.category}</h4>
                 </div>
-                <div className="grid grid-cols-1 gap-2">
-                  {category.skills.map((skill, sIndex) => (
-                    <div key={sIndex} className="flex items-center gap-2 pl-7">
-                      <div className={`w-1.5 h-1.5 rounded-full bg-${category.color}-400/50`}></div>
-                      <span className="text-slate-600 text-sm leading-tight">{skill}</span>
-                    </div>
-                  ))}
-                </div>
+                {Array.isArray(category.skills_list) && category.skills_list.length > 0 && (
+                  <div className="grid grid-cols-1 gap-2">
+                    {category.skills_list.filter((s: string) => s.trim() !== "").map((skill: string, sIndex: number) => (
+                      <div key={sIndex} className="flex items-center gap-2 pl-7">
+                        <div className={`w-1.5 h-1.5 rounded-full bg-${colorClass}-400/50 flex-shrink-0`}></div>
+                        <span className="text-slate-600 text-sm leading-tight">{skill}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             );
           })}

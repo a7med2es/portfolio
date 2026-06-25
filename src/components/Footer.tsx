@@ -2,7 +2,7 @@ import { Github, Linkedin, Mail, Phone } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white py-12 mt-16">
+    <footer id="footer-contact" className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white py-12 mt-16">
       <div className="container mx-auto px-4">
         {/* Main Footer Content */}
         <div className="flex flex-col lg:flex-row items-center justify-between gap-8 mb-8">

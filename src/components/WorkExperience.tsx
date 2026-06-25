@@ -1,33 +1,26 @@
-import { Briefcase, Building, ArrowRight, ExternalLink } from "lucide-react";
+import { Briefcase, Building, ArrowRight, ExternalLink, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useExperiences } from "@/hooks/usePortfolioData";
+import { useEffect, useState } from "react";
 
 const WorkExperience = () => {
-  const experiences = [
-    {
-      title: "Technical Support",
-      company: "EarthLink Telecommunications",
-      location: "Baghdad",
-      date: "07/2025 - Present",
-      description: [
-        "Diagnosed and resolved network and service incidents, escalating complex cases within SLA timelines.",
-        "Managed technical support tickets end-to-end with accurate documentation and customer follow-up.",
-        "Troubleshot connectivity and performance issues to reduce repeat incidents and improve resolution efficiency.",
-        "Recognized as Employee of the Month for developing a technical tool that significantly accelerated workflows, simplified access to requirements, and improved overall team efficiency."
-      ],
-      achievementLink: "https://drive.google.com/file/d/1lGLDZULfFNhttofLGo7vaVqLGTTsww19/view",
-      achievementTitle: "Employee of the Month – View Achievement"
-    },
-    {
-      title: "Electronics and Control",
-      company: "Al-Munir Home Appliances Manufacturing Company",
-      location: "Baghdad",
-      date: "06/2024 - 01/2025",
-      description: [
-        "Assisted in testing and supporting the production of control panels.",
-        "Gained hands-on experience with electronic systems in appliance manufacturing."
-      ]
-    }
-  ];
+  const { data: experiences, isLoading } = useExperiences();
+  const [hiddenItems, setHiddenItems] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    try {
+      const hidden = new Set(JSON.parse(localStorage.getItem("portfolio_hidden_experiences") || "[]")) as Set<string>;
+      setHiddenItems(hidden);
+    } catch { }
+  }, []);
+
+  if (isLoading) {
+    return <div className="flex justify-center py-10"><Loader2 className="w-6 h-6 animate-spin text-blue-500" /></div>;
+  }
+
+  const visibleExperiences = (experiences || []).filter((exp: any) => !hiddenItems.has(exp.id));
+
+  if (visibleExperiences.length === 0) return null;
 
   return (
     <Card className="bg-white/80 backdrop-blur-sm shadow-lg border-0">
@@ -39,8 +32,8 @@ const WorkExperience = () => {
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          {experiences.map((exp, index) => (
-            <div key={index} className="relative">
+          {visibleExperiences.map((exp: any, index: number) => (
+            <div key={exp.id} className="relative">
               <div className="flex items-start gap-4">
                 <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center">
                   <Briefcase className="w-5 h-5 text-blue-600" />
@@ -59,26 +52,26 @@ const WorkExperience = () => {
                     )}
                   </div>
                   <ul className="space-y-2 list-disc list-inside text-slate-700 leading-relaxed mb-4">
-                    {exp.description.map((item, id) => (
+                    {(Array.isArray(exp.description) ? exp.description : []).map((item: string, id: number) => (
                       <li key={id} className="text-sm lg:text-base pl-1">
                         {item}
                       </li>
                     ))}
                   </ul>
-                  {exp.achievementLink && (
+                  {exp.achievement_link && (
                     <a
-                      href={exp.achievementLink}
+                      href={exp.achievement_link}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg text-sm font-bold border border-blue-100 hover:bg-blue-100 transition-colors shadow-sm"
                     >
                       <ExternalLink className="w-4 h-4" />
-                      {exp.achievementTitle}
+                      {exp.achievement_title || "View Achievement"}
                     </a>
                   )}
                 </div>
               </div>
-              {index < experiences.length - 1 && (
+              {index < visibleExperiences.length - 1 && (
                 <div className="ml-5 mt-4 mb-2">
                   <ArrowRight className="w-4 h-4 text-slate-400" />
                 </div>
