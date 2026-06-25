@@ -1,5 +1,5 @@
 import { useAuth } from "@/hooks/useAuth";
-import { Navigate, Outlet, Link } from "react-router-dom";
+import { Navigate, Outlet, NavLink } from "react-router-dom";
 import { LayoutDashboard, LogOut } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -25,14 +25,14 @@ export default function AdminLayout() {
           </h2>
         </div>
         <nav className="flex-1 p-4 space-y-2">
-          <Link to="/admin/hero" className="block px-4 py-2 rounded-lg hover:bg-slate-800 hover:text-white transition-colors">Hero Section</Link>
-          <Link to="/admin/experience" className="block px-4 py-2 rounded-lg hover:bg-slate-800 hover:text-white transition-colors">Experience</Link>
-          <Link to="/admin/education" className="block px-4 py-2 rounded-lg hover:bg-slate-800 hover:text-white transition-colors">Education</Link>
-          <Link to="/admin/projects" className="block px-4 py-2 rounded-lg hover:bg-slate-800 hover:text-white transition-colors">Projects</Link>
-          <Link to="/admin/skills" className="block px-4 py-2 rounded-lg hover:bg-slate-800 hover:text-white transition-colors">Skills</Link>
-          <Link to="/admin/cv" className="block px-4 py-2 mt-2 rounded-lg bg-blue-900/50 text-blue-400 hover:bg-blue-600 hover:text-white transition-colors border border-blue-800/50 shadow-sm font-medium">CV Update (PDF)</Link>
+          <NavLink to="/admin/hero" className={({isActive}) => `block px-4 py-2 rounded-lg transition-colors font-medium ${isActive ? 'bg-blue-900/50 text-blue-400 border border-blue-800/50 shadow-sm' : 'hover:bg-slate-800 hover:text-white'}`}>Hero Section</NavLink>
+          <NavLink to="/admin/experience" className={({isActive}) => `block px-4 py-2 rounded-lg transition-colors font-medium ${isActive ? 'bg-blue-900/50 text-blue-400 border border-blue-800/50 shadow-sm' : 'hover:bg-slate-800 hover:text-white'}`}>Experience</NavLink>
+          <NavLink to="/admin/education" className={({isActive}) => `block px-4 py-2 rounded-lg transition-colors font-medium ${isActive ? 'bg-blue-900/50 text-blue-400 border border-blue-800/50 shadow-sm' : 'hover:bg-slate-800 hover:text-white'}`}>Education</NavLink>
+          <NavLink to="/admin/projects" className={({isActive}) => `block px-4 py-2 rounded-lg transition-colors font-medium ${isActive ? 'bg-blue-900/50 text-blue-400 border border-blue-800/50 shadow-sm' : 'hover:bg-slate-800 hover:text-white'}`}>Projects</NavLink>
+          <NavLink to="/admin/skills" className={({isActive}) => `block px-4 py-2 rounded-lg transition-colors font-medium ${isActive ? 'bg-blue-900/50 text-blue-400 border border-blue-800/50 shadow-sm' : 'hover:bg-slate-800 hover:text-white'}`}>Skills</NavLink>
+          <NavLink to="/admin/cv" className={({isActive}) => `block px-4 py-2 mt-2 rounded-lg transition-colors font-medium ${isActive ? 'bg-blue-900/50 text-blue-400 border border-blue-800/50 shadow-sm' : 'hover:bg-slate-800 hover:text-white'}`}>CV Update (PDF)</NavLink>
           <div className="pt-4 mt-4 border-t border-slate-800"></div>
-          <Link to="/admin/restore" className="block px-4 py-2 rounded-lg text-indigo-400 hover:bg-slate-800 transition-colors font-medium">Restore Default Data</Link>
+          <NavLink to="/admin/restore" className={({isActive}) => `block px-4 py-2 rounded-lg transition-colors font-medium ${isActive ? 'bg-indigo-900/50 text-indigo-400 border border-indigo-800/50 shadow-sm' : 'text-indigo-400 hover:bg-slate-800'}`}>Restore Default Data</NavLink>
         </nav>
         <div className="p-4 border-t border-slate-800">
           <button 
