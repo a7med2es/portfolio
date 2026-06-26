@@ -63,6 +63,31 @@ export const useExperiences = () => {
   });
 };
 
+export const useCourses = () => {
+  return useQuery({
+    queryKey: ["courses"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("courses").select("*").order("sort_order", { ascending: true });
+      // If error occurs (e.g. table doesn't exist), fallback gracefully
+      if (error && error.code !== "PGRST116" && error.code !== "42P01") {
+        console.warn("Courses fetch error:", error);
+      }
+      if (!data || data.length === 0) {
+        return [
+          {
+            id: "fallback-course-1",
+            title: "Advanced Control Systems",
+            institution: "Coursera",
+            date: "10/2023 - 12/2023",
+            certificate_link: ""
+          }
+        ];
+      }
+      return data;
+    },
+  });
+};
+
 export const useEducation = () => {
   return useQuery({
     queryKey: ["education"],

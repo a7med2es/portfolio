@@ -15,8 +15,7 @@ import ManageExperience from "./pages/Admin/ManageExperience";
 import ManageEducation from "./pages/Admin/ManageEducation";
 import ManageProjects from "./pages/Admin/ManageProjects";
 import ManageSkills from "./pages/Admin/ManageSkills";
-import CVBuilder from "./pages/Admin/CVBuilder";
-import SeedData from "./pages/Admin/SeedData";
+import CVEditorPage from "./pages/Admin/CVEditorPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -47,8 +46,7 @@ const App = () => (
               <Route path="education" element={<ManageEducation />} />
               <Route path="projects" element={<ManageProjects />} />
               <Route path="skills" element={<ManageSkills />} />
-              <Route path="cv" element={<CVBuilder />} />
-              <Route path="restore" element={<SeedData />} />
+              <Route path="cv" element={<CVEditorPage />} />
             </Route>
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

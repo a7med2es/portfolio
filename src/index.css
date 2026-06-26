@@ -2,6 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── A4 Page & Print Styles ─────────────────────────────── */
+.a4-page {
+  box-sizing: border-box;
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+  body * {
+    visibility: hidden;
+  }
+  .a4-page,
+  .a4-page * {
+    visibility: visible !important;
+  }
+  .a4-page {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 210mm !important;
+    min-height: 297mm !important;
+    transform: none !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+}
+
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
 
 @layer base {
@@ -99,5 +130,40 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+@media print {
+  /* Hide everything in the body by default */
+  body * {
+    visibility: hidden;
+  }
+  
+  /* Make the CV container and its children visible */
+  #cv-export-container, #cv-export-container * {
+    visibility: visible;
+  }
+  
+  /* Position the CV container at the top left of the printed page */
+  #cv-export-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 210mm !important;
+    min-height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    background-color: white !important;
+  }
+  
+  /* Hide the gray page separators and add buttons */
+  .pdf-separator, .pdf-exclude {
+    display: none !important;
+  }
+
+  /* Remove any page margins and set A4 size */
+  @page {
+    size: A4;
+    margin: 0;
   }
 }
