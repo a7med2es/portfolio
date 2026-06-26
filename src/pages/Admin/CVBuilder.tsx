@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import html2pdf from 'html2pdf.js';
 import { supabase } from '@/lib/supabase';
-import { useHero, useExperience, useEducation, useSkills, useProjects } from '@/hooks/usePortfolioData';
+import { useHero, useExperiences, useEducation, useSkills, useProjects } from '@/hooks/usePortfolioData';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Download, Save } from 'lucide-react';
@@ -14,7 +14,7 @@ export default function CVBuilder() {
   const [dataLoaded, setDataLoaded] = useState(false);
 
   const { data: hero, isLoading: heroLoading } = useHero();
-  const { data: exp, isLoading: expLoading } = useExperience();
+  const { data: exp, isLoading: expLoading } = useExperiences();
   const { data: edu, isLoading: eduLoading } = useEducation();
   const { data: skills, isLoading: skillsLoading } = useSkills();
   const { data: projs, isLoading: projsLoading } = useProjects();
