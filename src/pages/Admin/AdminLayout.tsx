@@ -53,6 +53,8 @@ export default function AdminLayout() {
           <NavLink onClick={() => setIsMobileMenuOpen(false)} to="/admin/projects" className={({isActive}) => `block px-4 py-2 rounded-lg transition-colors font-medium ${isActive ? 'bg-blue-900/50 text-blue-400 border border-blue-800/50 shadow-sm' : 'hover:bg-slate-800 hover:text-white'}`}>Projects</NavLink>
           <NavLink onClick={() => setIsMobileMenuOpen(false)} to="/admin/skills" className={({isActive}) => `block px-4 py-2 rounded-lg transition-colors font-medium ${isActive ? 'bg-blue-900/50 text-blue-400 border border-blue-800/50 shadow-sm' : 'hover:bg-slate-800 hover:text-white'}`}>Skills</NavLink>
           <NavLink onClick={() => setIsMobileMenuOpen(false)} to="/admin/cv" className={({isActive}) => `block px-4 py-2 mt-2 rounded-lg transition-colors font-medium ${isActive ? 'bg-blue-900/50 text-blue-400 border border-blue-800/50 shadow-sm' : 'hover:bg-slate-800 hover:text-white'}`}>CV Update (PDF)</NavLink>
+          <div className="pt-4 mt-4 border-t border-slate-800"></div>
+          <NavLink onClick={() => setIsMobileMenuOpen(false)} to="/admin/restore" className={({isActive}) => `block px-4 py-2 rounded-lg transition-colors font-medium ${isActive ? 'bg-indigo-900/50 text-indigo-300 border border-indigo-800/50 shadow-sm' : 'text-indigo-400 hover:bg-slate-800 hover:text-indigo-300'}`}>Restore Default Data</NavLink>
         </nav>
         <div className="p-4 border-t border-slate-800">
           <button 

@@ -4,16 +4,14 @@ import { supabase } from '@/lib/supabase';
 import { useHero, useExperiences, useEducation, useSkills, useProjects } from '@/hooks/usePortfolioData';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Download, Save, Type } from 'lucide-react';
+import { Loader2, Download, Save, Phone, Mail, Globe, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
-import { CVFloatingToolbar } from '@/components/CVFloatingToolbar';
 
 export default function CVBuilder() {
   const templateRef = useRef<HTMLDivElement>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
-  const [globalFont, setGlobalFont] = useState('Arial, sans-serif');
 
   const { data: hero, isLoading: heroLoading } = useHero();
   const { data: exp, isLoading: expLoading } = useExperiences();
@@ -34,7 +32,6 @@ export default function CVBuilder() {
     if (action === 'download') setIsGenerating(true);
     else setIsSaving(true);
 
-    // Hide edit outlines for PDF generation
     const editables = element.querySelectorAll('[contenteditable="true"]');
     editables.forEach(el => (el as HTMLElement).style.outline = 'none');
 
@@ -52,28 +49,15 @@ export default function CVBuilder() {
       } else if (action === 'save') {
         const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
         const file = new File([pdfBlob], opt.filename, { type: 'application/pdf' });
-        
-        // Upload to Supabase Storage
-        const { data, error } = await supabase.storage
+        const { error } = await supabase.storage
           .from('portfolio_files')
-          .upload(`cvs/${opt.filename}`, file, {
-            cacheControl: '3600',
-            upsert: false
-          });
-
+          .upload(`cvs/${opt.filename}`, file, { cacheControl: '3600', upsert: false });
         if (error) throw error;
-
-        // Get public URL
-        const { data: { publicUrl } } = supabase.storage
-          .from('portfolio_files')
-          .getPublicUrl(`cvs/${opt.filename}`);
-
-        // Update Hero table with new resume_url
+        const { data: { publicUrl } } = supabase.storage.from('portfolio_files').getPublicUrl(`cvs/${opt.filename}`);
         if (hero?.id) {
           const { error: updateError } = await supabase.from("hero").update({ resume_url: publicUrl }).eq("id", hero.id);
           if (updateError) throw updateError;
         }
-        
         toast.success("CV saved and set as your live resume!");
       }
     } catch (err: any) {
@@ -81,7 +65,6 @@ export default function CVBuilder() {
     } finally {
       if (action === 'download') setIsGenerating(false);
       else setIsSaving(false);
-      // Restore outlines
       editables.forEach(el => (el as HTMLElement).style.outline = '');
     }
   };
@@ -95,6 +78,10 @@ export default function CVBuilder() {
     );
   }
 
+  // Separate degree education from training courses
+  const degrees = (edu || []).filter((e: any) => !e.is_training);
+  const trainings = (edu || []).filter((e: any) => e.is_training);
+
   return (
     <div className="space-y-6">
       <Card className="border-0 shadow-sm">
@@ -102,7 +89,7 @@ export default function CVBuilder() {
           <div>
             <CardTitle className="text-2xl font-bold text-slate-800">CV Builder</CardTitle>
             <p className="text-slate-500 text-sm mt-1">
-              Click any text to edit directly. Changes are not saved to the database tables, only to the generated PDF.
+              Click any text to edit directly. Changes are only reflected in the generated PDF.
             </p>
           </div>
           <div className="flex gap-3">
@@ -116,190 +103,239 @@ export default function CVBuilder() {
             </Button>
           </div>
         </CardHeader>
-        
-        {/* Global Controls */}
-        <div className="bg-slate-50 border-b border-slate-100 px-6 py-3 flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Type className="w-4 h-4 text-slate-500" />
-            <span className="text-sm font-medium text-slate-700">CV Font:</span>
-            <select 
-              value={globalFont}
-              onChange={(e) => setGlobalFont(e.target.value)}
-              className="h-8 px-2 text-sm border border-slate-200 rounded-md bg-white focus:outline-none focus:border-blue-500"
-            >
-              <option value="Arial, sans-serif">Arial</option>
-              <option value="'Times New Roman', Times, serif">Times New Roman</option>
-              <option value="'Courier New', Courier, monospace">Courier New</option>
-              <option value="Georgia, serif">Georgia</option>
-              <option value="Verdana, sans-serif">Verdana</option>
-              <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
-              <option value="Inter, sans-serif">Inter</option>
-            </select>
-          </div>
-        </div>
-        
-        <CardContent className="bg-slate-200 p-8 flex justify-center overflow-x-auto relative">
-          <CVFloatingToolbar containerRef={templateRef} />
+
+        <CardContent className="bg-slate-100 p-8 flex justify-center overflow-x-auto">
           {/* A4 Container */}
-          <div 
+          <div
             ref={templateRef}
-            className="bg-white shadow-2xl relative"
-            style={{ 
-              width: '210mm', 
-              minHeight: '297mm', 
-              padding: '12mm',
-              fontFamily: globalFont
+            className="bg-white shadow-2xl"
+            style={{
+              width: '210mm',
+              minHeight: '297mm',
+              fontFamily: '"Arial", sans-serif',
+              fontSize: '11px',
             }}
           >
-            {/* CV HEADER */}
-            <div className="mb-6 border-b-2 border-slate-200 pb-4">
-              <h1 contentEditable suppressContentEditableWarning className="text-4xl font-bold text-slate-900 tracking-tight uppercase mb-1 focus:outline-blue-200">
-                {hero?.name || "AHMED ESSAM"}
+            {/* HEADER */}
+            <div style={{ background: '#1e293b', color: 'white', padding: '20px 24px 16px' }}>
+              <h1
+                contentEditable suppressContentEditableWarning
+                style={{ fontSize: '28px', fontWeight: 'bold', letterSpacing: '2px', margin: 0, outline: 'none' }}
+              >
+                {hero?.name || 'AHMED ESSAM'}
               </h1>
-              <h2 contentEditable suppressContentEditableWarning className="text-xl text-blue-600 font-medium mb-3 focus:outline-blue-200">
-                {hero?.title || "Technical Support"}
+              <h2
+                contentEditable suppressContentEditableWarning
+                style={{ fontSize: '13px', color: '#93c5fd', fontWeight: '500', margin: '4px 0 12px', outline: 'none' }}
+              >
+                {hero?.title || 'Control & Systems Engineer'}
               </h2>
-              <div className="flex flex-wrap gap-4 text-xs font-semibold text-slate-600">
-                <span contentEditable suppressContentEditableWarning className="focus:outline-blue-200">{hero?.phone}</span>
-                <span contentEditable suppressContentEditableWarning className="focus:outline-blue-200">{hero?.email}</span>
-                <span contentEditable suppressContentEditableWarning className="focus:outline-blue-200">{hero?.website}</span>
-                <span contentEditable suppressContentEditableWarning className="focus:outline-blue-200">{hero?.location}</span>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', fontSize: '11px', color: '#cbd5e1' }}>
+                {hero?.phone && (
+                  <span contentEditable suppressContentEditableWarning style={{ outline: 'none' }}>
+                    📞 {hero.phone}
+                  </span>
+                )}
+                {hero?.email && (
+                  <span contentEditable suppressContentEditableWarning style={{ outline: 'none' }}>
+                    ✉ {hero.email}
+                  </span>
+                )}
+                {hero?.location && (
+                  <span contentEditable suppressContentEditableWarning style={{ outline: 'none' }}>
+                    📍 {hero.location}
+                  </span>
+                )}
+                {hero?.website && (
+                  <span contentEditable suppressContentEditableWarning style={{ outline: 'none' }}>
+                    🌐 {hero.website}
+                  </span>
+                )}
               </div>
             </div>
 
-            <div className="flex gap-8">
-              {/* LEFT COLUMN */}
-              <div className="w-[60%] flex flex-col gap-6">
+            {/* BODY */}
+            <div style={{ display: 'flex', gap: '0', padding: '0' }}>
+              {/* LEFT COLUMN - 62% */}
+              <div style={{ width: '62%', padding: '20px 16px 20px 24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+
+                {/* OBJECTIVE */}
+                {hero?.summary && (
+                  <section>
+                    <h3 style={{ fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1.5px', borderBottom: '2px solid #1e293b', paddingBottom: '4px', marginBottom: '8px', color: '#1e293b' }}>
+                      Objective
+                    </h3>
+                    <p contentEditable suppressContentEditableWarning style={{ fontSize: '11px', lineHeight: '1.6', color: '#475569', outline: 'none' }}>
+                      {hero.summary}
+                    </p>
+                  </section>
+                )}
+
                 {/* EXPERIENCE */}
-                <section>
-                  <h3 contentEditable suppressContentEditableWarning className="text-lg font-bold text-slate-900 uppercase tracking-widest border-b-2 border-black pb-1 mb-4 focus:outline-blue-200">
-                    Experience
-                  </h3>
-                  <div className="flex flex-col gap-5">
-                    {(exp || []).map((e: any, i: number) => {
-                      const descItems = Array.isArray(e.description) 
-                        ? e.description 
-                        : (e.description || "").split('\n').filter(Boolean);
-                      
-                      return (
+                {(exp || []).length > 0 && (
+                  <section>
+                    <h3 style={{ fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1.5px', borderBottom: '2px solid #1e293b', paddingBottom: '4px', marginBottom: '12px', color: '#1e293b' }}>
+                      Work Experience
+                    </h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                      {(exp || []).map((e: any, i: number) => (
                         <div key={i}>
-                          <h4 contentEditable suppressContentEditableWarning className="font-bold text-slate-900 text-[15px] focus:outline-blue-200">{e.title}</h4>
-                          <h5 contentEditable suppressContentEditableWarning className="text-blue-600 font-bold text-sm focus:outline-blue-200">{e.company}</h5>
-                          <p contentEditable suppressContentEditableWarning className="text-xs text-slate-500 font-semibold mb-2 focus:outline-blue-200">
-                            {e.start_date} - {e.end_date || "Present"}
-                          </p>
-                          <ul className="list-disc ml-4 text-xs text-slate-700 space-y-1">
-                            {descItems.map((line: string, j: number) => (
-                              <li key={j} contentEditable suppressContentEditableWarning className="focus:outline-blue-200">{line.replace(/^-\s*/, '')}</li>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <div>
+                              <h4 contentEditable suppressContentEditableWarning style={{ fontWeight: 'bold', fontSize: '12px', color: '#1e293b', margin: 0, outline: 'none' }}>
+                                {e.title}
+                              </h4>
+                              <h5 contentEditable suppressContentEditableWarning style={{ color: '#2563eb', fontWeight: '600', fontSize: '11px', margin: '2px 0', outline: 'none' }}>
+                                {e.company}{e.location ? ` — ${e.location}` : ''}
+                              </h5>
+                            </div>
+                            {e.date && (
+                              <span contentEditable suppressContentEditableWarning style={{ fontSize: '10px', color: '#64748b', whiteSpace: 'nowrap', outline: 'none' }}>
+                                {e.date}
+                              </span>
+                            )}
+                          </div>
+                          <ul style={{ marginLeft: '14px', marginTop: '6px', color: '#475569', display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                            {(Array.isArray(e.description) ? e.description : []).map((line: string, j: number) => (
+                              <li key={j} contentEditable suppressContentEditableWarning style={{ fontSize: '11px', lineHeight: '1.5', outline: 'none' }}>
+                                {line}
+                              </li>
                             ))}
                           </ul>
                         </div>
-                      );
-                    })}
-                  </div>
-                </section>
+                      ))}
+                    </div>
+                  </section>
+                )}
 
                 {/* EDUCATION */}
-                <section>
-                  <h3 contentEditable suppressContentEditableWarning className="text-lg font-bold text-slate-900 uppercase tracking-widest border-b-2 border-black pb-1 mb-4 focus:outline-blue-200">
-                    Education
-                  </h3>
-                  <div className="flex flex-col gap-4">
-                    {(edu || []).map((e: any, i: number) => (
-                      <div key={i}>
-                        <h4 contentEditable suppressContentEditableWarning className="font-bold text-slate-900 text-[15px] focus:outline-blue-200">{e.degree}</h4>
-                        <h5 contentEditable suppressContentEditableWarning className="text-blue-600 font-bold text-sm focus:outline-blue-200">{e.institution}</h5>
-                        <div className="flex justify-between items-center text-xs text-slate-500 font-semibold mt-1">
-                          <span contentEditable suppressContentEditableWarning className="focus:outline-blue-200">{e.start_date} - {e.end_date}</span>
+                {degrees.length > 0 && (
+                  <section>
+                    <h3 style={{ fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1.5px', borderBottom: '2px solid #1e293b', paddingBottom: '4px', marginBottom: '12px', color: '#1e293b' }}>
+                      Education
+                    </h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      {degrees.map((e: any, i: number) => (
+                        <div key={i}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <div>
+                              <h4 contentEditable suppressContentEditableWarning style={{ fontWeight: 'bold', fontSize: '12px', color: '#1e293b', margin: 0, outline: 'none' }}>
+                                {e.title}
+                              </h4>
+                              <h5 contentEditable suppressContentEditableWarning style={{ color: '#2563eb', fontWeight: '600', fontSize: '11px', margin: '2px 0', outline: 'none' }}>
+                                {e.institution}
+                              </h5>
+                              {e.honors && (
+                                <p contentEditable suppressContentEditableWarning style={{ fontSize: '11px', color: '#475569', margin: '2px 0', outline: 'none' }}>
+                                  {e.honors}
+                                </p>
+                              )}
+                            </div>
+                            {e.date && (
+                              <span contentEditable suppressContentEditableWarning style={{ fontSize: '10px', color: '#64748b', whiteSpace: 'nowrap', outline: 'none' }}>
+                                {e.date}
+                              </span>
+                            )}
+                          </div>
                         </div>
-                        {e.description && (
-                          <ul className="list-disc ml-4 mt-2 text-xs text-slate-700 space-y-1">
-                             <li contentEditable suppressContentEditableWarning className="font-semibold focus:outline-blue-200">{e.description}</li>
-                          </ul>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </section>
+                      ))}
+                    </div>
+                  </section>
+                )}
 
                 {/* PROJECTS */}
-                <section>
-                  <h3 contentEditable suppressContentEditableWarning className="text-lg font-bold text-slate-900 uppercase tracking-widest border-b-2 border-black pb-1 mb-4 focus:outline-blue-200">
-                    Projects
-                  </h3>
-                  <div className="flex flex-col gap-4">
-                    {(projs || []).map((p: any, i: number) => {
-                      const descItems = Array.isArray(p.descriptions) 
-                        ? p.descriptions 
-                        : (p.description || "").split('\n').filter(Boolean);
-                      
-                      return (
+                {(projs || []).length > 0 && (
+                  <section>
+                    <h3 style={{ fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1.5px', borderBottom: '2px solid #1e293b', paddingBottom: '4px', marginBottom: '12px', color: '#1e293b' }}>
+                      Academic Projects
+                    </h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      {(projs || []).map((p: any, i: number) => (
                         <div key={i}>
-                          <h4 contentEditable suppressContentEditableWarning className="font-bold text-slate-900 text-[15px] focus:outline-blue-200">{p.title}</h4>
-                          <div className="text-xs text-slate-500 font-semibold mb-2">
-                             <span contentEditable suppressContentEditableWarning className="focus:outline-blue-200">{p.link || p.github_url || p.project_url}</span>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <h4 contentEditable suppressContentEditableWarning style={{ fontWeight: 'bold', fontSize: '12px', color: '#1e293b', margin: 0, outline: 'none' }}>
+                              {p.title}
+                            </h4>
+                            {p.project_url && (
+                              <span contentEditable suppressContentEditableWarning style={{ fontSize: '10px', color: '#2563eb', outline: 'none' }}>
+                                {p.project_url}
+                              </span>
+                            )}
                           </div>
-                          <ul className="list-disc ml-4 text-xs text-slate-700 space-y-1">
-                            {descItems.map((line: string, j: number) => (
-                              <li key={j} contentEditable suppressContentEditableWarning className="focus:outline-blue-200">{line.replace(/^-\s*/, '')}</li>
+                          {p.subtitle && (
+                            <p contentEditable suppressContentEditableWarning style={{ fontSize: '10px', color: '#64748b', margin: '2px 0', outline: 'none' }}>
+                              {p.subtitle}
+                            </p>
+                          )}
+                          {(Array.isArray(p.descriptions) ? p.descriptions : []).length > 0 && (
+                            <ul style={{ marginLeft: '14px', marginTop: '4px', color: '#475569', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                              {(Array.isArray(p.descriptions) ? p.descriptions : []).map((line: string, j: number) => (
+                                <li key={j} contentEditable suppressContentEditableWarning style={{ fontSize: '10px', lineHeight: '1.5', outline: 'none' }}>
+                                  {line}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                )}
+              </div>
+
+              {/* RIGHT COLUMN - 38% */}
+              <div style={{ width: '38%', padding: '20px 20px 20px 16px', borderLeft: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '20px', background: '#f8fafc' }}>
+
+                {/* SKILLS */}
+                {(skills || []).length > 0 && (
+                  <section>
+                    <h3 style={{ fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1.5px', borderBottom: '2px solid #1e293b', paddingBottom: '4px', marginBottom: '12px', color: '#1e293b' }}>
+                      Skills
+                    </h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      {(skills || []).map((s: any, i: number) => (
+                        <div key={i}>
+                          <h4 contentEditable suppressContentEditableWarning style={{ fontWeight: 'bold', fontSize: '11px', color: '#2563eb', marginBottom: '4px', outline: 'none' }}>
+                            {s.category}
+                          </h4>
+                          <ul style={{ marginLeft: '10px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                            {(Array.isArray(s.skills_list) ? s.skills_list : []).map((skill: string, j: number) => (
+                              <li key={j} contentEditable suppressContentEditableWarning style={{ fontSize: '10px', color: '#475569', lineHeight: '1.5', outline: 'none' }}>
+                                {skill}
+                              </li>
                             ))}
                           </ul>
                         </div>
-                      );
-                    })}
-                  </div>
-                </section>
-              </div>
-
-              {/* RIGHT COLUMN */}
-              <div className="w-[40%] flex flex-col gap-6 pl-4 border-l border-slate-100">
-                {/* SUMMARY */}
-                <section>
-                  <h3 contentEditable suppressContentEditableWarning className="text-lg font-bold text-slate-900 uppercase tracking-widest border-b-2 border-black pb-1 mb-3 focus:outline-blue-200">
-                    Summary
-                  </h3>
-                  <p contentEditable suppressContentEditableWarning className="text-[13px] leading-relaxed text-slate-700 focus:outline-blue-200">
-                    {hero?.summary}
-                  </p>
-                </section>
-
-                {/* SKILLS */}
-                <section>
-                  <h3 contentEditable suppressContentEditableWarning className="text-lg font-bold text-slate-900 uppercase tracking-widest border-b-2 border-black pb-1 mb-4 focus:outline-blue-200">
-                    Skills
-                  </h3>
-                  <div className="flex flex-col gap-4">
-                    {/* Assuming we group skills by category manually or just list them */}
-                    <div>
-                       <h4 contentEditable suppressContentEditableWarning className="text-blue-600 font-bold text-[13px] mb-2 focus:outline-blue-200">Core Competencies</h4>
-                       <ul className="flex flex-col gap-2">
-                        {(skills || []).map((s: any, i: number) => {
-                          const skillsString = Array.isArray(s.skills_list) ? s.skills_list.join(", ") : s.skills_list;
-                          return (
-                            <li key={i} contentEditable suppressContentEditableWarning className="text-[13px] text-slate-800 font-semibold border-b border-slate-100 pb-1 focus:outline-blue-200">
-                              <span className="font-bold text-blue-600 mr-1">{s.category}:</span> {skillsString}
-                            </li>
-                          );
-                        })}
-                       </ul>
+                      ))}
                     </div>
-                  </div>
-                </section>
-                
-                {/* TRAINING / COURSES (Dummy or derived from data) */}
-                <section>
-                  <h3 contentEditable suppressContentEditableWarning className="text-lg font-bold text-slate-900 uppercase tracking-widest border-b-2 border-black pb-1 mb-4 focus:outline-blue-200">
-                    Training / Courses
-                  </h3>
-                  <div className="flex flex-col gap-2">
-                    <h4 contentEditable suppressContentEditableWarning className="font-bold text-slate-900 text-[14px] focus:outline-blue-200">Cisco Certified Network Associate (CCNA)</h4>
-                    <h5 contentEditable suppressContentEditableWarning className="text-slate-700 font-bold text-[13px] focus:outline-blue-200">MK Training Center - Baghdad</h5>
-                    <p contentEditable suppressContentEditableWarning className="text-[12px] leading-snug text-slate-600 mt-1 focus:outline-blue-200">
-                      Topics Covered: TCP/IP, OSI Model, IPv4 Addressing, Subnetting, VLANs, STP, DHCP, DNS, NAT, Routing & Switching.
-                    </p>
-                  </div>
-                </section>
+                  </section>
+                )}
 
+                {/* TRAINING */}
+                {trainings.length > 0 && (
+                  <section>
+                    <h3 style={{ fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1.5px', borderBottom: '2px solid #1e293b', paddingBottom: '4px', marginBottom: '12px', color: '#1e293b' }}>
+                      Training / Courses
+                    </h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      {trainings.map((e: any, i: number) => (
+                        <div key={i}>
+                          <h4 contentEditable suppressContentEditableWarning style={{ fontWeight: 'bold', fontSize: '11px', color: '#1e293b', margin: 0, outline: 'none' }}>
+                            {e.title}
+                          </h4>
+                          <h5 contentEditable suppressContentEditableWarning style={{ color: '#2563eb', fontWeight: '600', fontSize: '10px', margin: '2px 0', outline: 'none' }}>
+                            {e.institution}
+                          </h5>
+                          {e.course_details && (
+                            <p contentEditable suppressContentEditableWarning style={{ fontSize: '10px', color: '#475569', lineHeight: '1.5', outline: 'none' }}>
+                              {e.course_details}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                )}
               </div>
             </div>
           </div>

@@ -92,13 +92,18 @@ export default function ManageSkills() {
   const [addingNew, setAddingNew] = useState(false);
   const [newData, setNewData] = useState<any>({ ...emptySkill });
   const [saving, setSaving] = useState(false);
-  const [hiddenItems, setHiddenItems] = useState<Set<string>>(new Set());
+  const [hiddenItems, setHiddenItems] = useState<Set<string>>(() => {
+    try { return new Set(JSON.parse(localStorage.getItem(HIDDEN_KEY) || "[]")); }
+    catch { return new Set(); }
+  });
 
-  const toggleHidden = async (id: string, currentlyHidden: boolean) => {
-    const newHidden = !currentlyHidden;
-    const { error } = await supabase.from("skills").update({ is_hidden: newHidden }).eq("id", id);
-    if (error) { toast.error("Failed to update visibility: " + error.message); return; }
-    refetch();
+  const toggleHidden = (id: string) => {
+    setHiddenItems(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      localStorage.setItem(HIDDEN_KEY, JSON.stringify([...next]));
+      return next;
+    });
   };
 
   const handleSave = async (data: any, isNew = false) => {
@@ -156,13 +161,13 @@ export default function ManageSkills() {
 
       <div className="space-y-3">
         {skills?.map((skill: any) => (
-          <Card key={skill.id} className={`border-0 shadow-sm transition-all ${skill.is_hidden ? "opacity-50 bg-red-50/30" : "bg-white"}`}>
+          <Card key={skill.id} className={`border-0 shadow-sm transition-all ${hiddenItems.has(skill.id) ? "opacity-50 bg-red-50/30" : "bg-white"}`}>
             <CardContent className="pt-4 pb-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center flex-wrap gap-2 mb-1">
                     <span className="font-bold text-slate-800">{skill.category}</span>
-                    {skill.is_hidden && <span className="text-xs bg-red-100 text-red-500 px-2 py-0.5 rounded-full font-medium">Hidden</span>}
+                    {hiddenItems.has(skill.id) && <span className="text-xs bg-red-100 text-red-500 px-2 py-0.5 rounded-full font-medium">Hidden</span>}
                     <span className={`text-xs px-2 py-0.5 rounded-full border bg-${skill.color || "blue"}-50 text-${skill.color || "blue"}-600 border-${skill.color || "blue"}-200`}>
                       Theme: {skill.color || "blue"}
                     </span>
@@ -176,9 +181,9 @@ export default function ManageSkills() {
                   )}
                 </div>
                 <div className="flex items-center gap-1 flex-shrink-0">
-                  <Button size="sm" variant="ghost" onClick={() => toggleHidden(skill.id, skill.is_hidden)}
-                    className={skill.is_hidden ? "text-red-400 hover:text-red-600" : "text-slate-400 hover:text-slate-600"}>
-                    {skill.is_hidden ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  <Button size="sm" variant="ghost" onClick={() => toggleHidden(skill.id)}
+                    className={hiddenItems.has(skill.id) ? "text-red-400 hover:text-red-600" : "text-slate-400 hover:text-slate-600"}>
+                    {hiddenItems.has(skill.id) ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </Button>
                   <Button size="sm" variant="ghost"
                     onClick={() => editingId === skill.id ? (setEditingId(null), setEditData(null)) : (setEditingId(skill.id), setEditData({ ...skill }))}

@@ -1,18 +1,26 @@
 import { Briefcase, Building, ArrowRight, ExternalLink, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useExperiences } from "@/hooks/usePortfolioData";
+import { useEffect, useState } from "react";
 
 const WorkExperience = () => {
   const { data: experiences, isLoading } = useExperiences();
+  const [hiddenItems, setHiddenItems] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    try {
+      const hidden = new Set(JSON.parse(localStorage.getItem("portfolio_hidden_experiences") || "[]")) as Set<string>;
+      setHiddenItems(hidden);
+    } catch { }
+  }, []);
 
   if (isLoading) {
     return <div className="flex justify-center py-10"><Loader2 className="w-6 h-6 animate-spin text-blue-500" /></div>;
   }
 
-  const visibleExperiences = (experiences || []).filter((exp: any) => !exp.is_hidden);
+  const visibleExperiences = (experiences || []).filter((exp: any) => !hiddenItems.has(exp.id));
 
   if (visibleExperiences.length === 0) return null;
-
 
   return (
     <Card className="bg-white/80 backdrop-blur-sm shadow-lg border-0">

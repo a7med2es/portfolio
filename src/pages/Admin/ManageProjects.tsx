@@ -111,13 +111,18 @@ export default function ManageProjects() {
   const [addingNew, setAddingNew] = useState(false);
   const [newData, setNewData] = useState<any>({ ...emptyProject });
   const [saving, setSaving] = useState(false);
-  const [hiddenItems, setHiddenItems] = useState<Set<string>>(new Set());
+  const [hiddenItems, setHiddenItems] = useState<Set<string>>(() => {
+    try { return new Set(JSON.parse(localStorage.getItem(HIDDEN_KEY) || "[]")); }
+    catch { return new Set(); }
+  });
 
-  const toggleHidden = async (id: string, currentlyHidden: boolean) => {
-    const newHidden = !currentlyHidden;
-    const { error } = await supabase.from("projects").update({ is_hidden: newHidden }).eq("id", id);
-    if (error) { toast.error("Failed to update visibility: " + error.message); return; }
-    refetch();
+  const toggleHidden = (id: string) => {
+    setHiddenItems(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      localStorage.setItem(HIDDEN_KEY, JSON.stringify([...next]));
+      return next;
+    });
   };
 
   const handleSave = async (data: any, isNew = false) => {
@@ -175,13 +180,13 @@ export default function ManageProjects() {
 
       <div className="space-y-3">
         {projects?.map((proj: any) => (
-          <Card key={proj.id} className={`border-0 shadow-sm transition-all ${proj.is_hidden ? "opacity-50 bg-red-50/30" : "bg-white"}`}>
+          <Card key={proj.id} className={`border-0 shadow-sm transition-all ${hiddenItems.has(proj.id) ? "opacity-50 bg-red-50/30" : "bg-white"}`}>
             <CardContent className="pt-4 pb-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center flex-wrap gap-2">
                     <span className="font-bold text-slate-800">{proj.title}</span>
-                    {proj.is_hidden && <span className="text-xs bg-red-100 text-red-500 px-2 py-0.5 rounded-full font-medium">Hidden</span>}
+                    {hiddenItems.has(proj.id) && <span className="text-xs bg-red-100 text-red-500 px-2 py-0.5 rounded-full font-medium">Hidden</span>}
                   </div>
                   {proj.subtitle && <p className="text-sm text-slate-500 mt-0.5">{proj.subtitle}</p>}
                   {proj.date && <p className="text-xs text-slate-400 mt-0.5">{proj.date}</p>}
@@ -194,9 +199,9 @@ export default function ManageProjects() {
                   )}
                 </div>
                 <div className="flex items-center gap-1 flex-shrink-0">
-                  <Button size="sm" variant="ghost" onClick={() => toggleHidden(proj.id, proj.is_hidden)}
-                    className={proj.is_hidden ? "text-red-400 hover:text-red-600" : "text-slate-400 hover:text-slate-600"}>
-                    {proj.is_hidden ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  <Button size="sm" variant="ghost" onClick={() => toggleHidden(proj.id)}
+                    className={hiddenItems.has(proj.id) ? "text-red-400 hover:text-red-600" : "text-slate-400 hover:text-slate-600"}>
+                    {hiddenItems.has(proj.id) ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </Button>
                   <Button size="sm" variant="ghost"
                     onClick={() => editingId === proj.id ? (setEditingId(null), setEditData(null)) : (setEditingId(proj.id), setEditData({ ...proj }))}
