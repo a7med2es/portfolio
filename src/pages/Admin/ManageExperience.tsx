@@ -92,19 +92,17 @@ export default function ManageExperience() {
   const [newData, setNewData] = useState<any>({ ...emptyExp });
   const [saving, setSaving] = useState(false);
   const [hiddenItems, setHiddenItems] = useState<Set<string>>(() => {
-    return new Set();
+    try { return new Set(JSON.parse(localStorage.getItem(HIDDEN_KEY) || "[]")); }
+    catch { return new Set(); }
   });
 
-  const toggleHidden = async (id: string, currentlyHidden: boolean) => {
-    const newHidden = !currentlyHidden;
-    const { error } = await supabase.from("experiences").update({ is_hidden: newHidden }).eq("id", id);
-    if (error) { toast.error("Failed to update visibility: " + error.message); return; }
+  const toggleHidden = (id: string) => {
     setHiddenItems(prev => {
       const next = new Set(prev);
-      newHidden ? next.add(id) : next.delete(id);
+      next.has(id) ? next.delete(id) : next.add(id);
+      localStorage.setItem(HIDDEN_KEY, JSON.stringify([...next]));
       return next;
     });
-    refetch();
   };
 
   const handleSave = async (data: any, isNew = false) => {
@@ -162,7 +160,7 @@ export default function ManageExperience() {
 
       <div className="space-y-3">
         {experiences?.map((exp: any) => (
-          <Card key={exp.id} className={`border-0 shadow-sm transition-all ${exp.is_hidden ? "opacity-50 bg-red-50/30" : "bg-white"}`}>
+          <Card key={exp.id} className={`border-0 shadow-sm transition-all ${hiddenItems.has(exp.id) ? "opacity-50 bg-red-50/30" : "bg-white"}`}>
             <CardContent className="pt-4 pb-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
@@ -171,15 +169,15 @@ export default function ManageExperience() {
                     <span className="text-slate-400">·</span>
                     <span className="text-blue-600 font-medium text-sm">{exp.company}</span>
                     {exp.date && <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">{exp.date}</span>}
-                    {exp.is_hidden && <span className="text-xs bg-red-100 text-red-500 px-2 py-0.5 rounded-full font-medium">Hidden</span>}
+                    {hiddenItems.has(exp.id) && <span className="text-xs bg-red-100 text-red-500 px-2 py-0.5 rounded-full font-medium">Hidden</span>}
                   </div>
                   {exp.location && <p className="text-xs text-slate-400 mt-0.5">{exp.location}</p>}
                 </div>
                 <div className="flex items-center gap-1 flex-shrink-0">
-                  <Button size="sm" variant="ghost" title={exp.is_hidden ? "Show" : "Hide"}
-                    onClick={() => toggleHidden(exp.id, exp.is_hidden)}
-                    className={exp.is_hidden ? "text-red-400 hover:text-red-600" : "text-slate-400 hover:text-slate-600"}>
-                    {exp.is_hidden ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  <Button size="sm" variant="ghost" title={hiddenItems.has(exp.id) ? "Show" : "Hide"}
+                    onClick={() => toggleHidden(exp.id)}
+                    className={hiddenItems.has(exp.id) ? "text-red-400 hover:text-red-600" : "text-slate-400 hover:text-slate-600"}>
+                    {hiddenItems.has(exp.id) ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </Button>
                   <Button size="sm" variant="ghost" title="Edit"
                     onClick={() => editingId === exp.id ? (setEditingId(null), setEditData(null)) : (setEditingId(exp.id), setEditData({ ...exp }))}
